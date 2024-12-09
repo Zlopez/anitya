@@ -12,13 +12,18 @@ services:
     ports:
       - "127.0.0.1:5000:5000"
     volumes:
-      - ./anitya/:/app/anitya:z
-      - ./docs/:/app/docs:z
+      - .:/app:z
     restart: unless-stopped
     environment:
+      - ANITYA_WEB_CONFIG=anitya.toml
       - FLASK_APP=anitya.wsgi
       - FLASK_DEBUG=1
       - START_COMMAND=flask run -h 0.0.0.0
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "5000" ]
+      interval: 3s
+      timeout: 3s
+      retries: 30
     depends_on:
       postgres:
         condition: service_started
